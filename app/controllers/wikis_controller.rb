@@ -1,4 +1,5 @@
 class WikisController < ApplicationController
+
   def index
     @wikis = Wiki.all
   end
@@ -13,6 +14,7 @@ class WikisController < ApplicationController
 
   def create
     @wiki = Wiki.new(params.require(:wiki).permit(:title, :body, :private))
+    @wiki.user = current_user
     if @wiki.save
       redirect_to @wiki, notice: "Wiki was saved successfully."
     else
@@ -27,6 +29,7 @@ class WikisController < ApplicationController
 
   def update
     @wiki = Wiki.find(params[:id])
+    authorize @wiki
     if @wiki.update_attributes(params.require(:wiki).permit(:title, :body, :private))
       redirect_to @wiki
     else
